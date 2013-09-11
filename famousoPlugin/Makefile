@@ -12,7 +12,7 @@ LIB       := ./lib
 CXXFLAGS  := -Wall -g -Os -fno-strict-aliasing
 LDFLAGS   := -O1
 INCLUDES  := ${INCLUDE}
-LDPATHS   := ${FAMOUSO_PATH}/lib/linux/standard/gcc-4.7.3
+LDPATHS   := /usr/lib ${FAMOUSO_PATH}/lib/linux/standard/gcc-4.7.3
 LIBS      := boost_system boost_thread boost_program_options famouso fec
 SYMBOLS   := LINUX FAMOUSO_DEBUG_DISABLE
 

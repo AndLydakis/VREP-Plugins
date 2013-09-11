@@ -10,14 +10,13 @@
 #include <mw/api/PublisherEventChannel.h>
 #include <mw/api/SubscriberEventChannel.h>
 #include <famouso.h>
+#include <mw/common/ExtendedEvent.h>
+
+#include <v_repLib.h>
 
 class FamousoPlugin : public VRepPlugin
 {
   private:
-    static constexpr const char* noseTopic="Nose    ";
-    static constexpr const char* lMotorTopic="LMotor  ";
-    static constexpr const char* rMotorTopic="RMotor  ";
-
     struct config
     {
       typedef famouso::mw::el::EventLayerClientStub EL;
@@ -28,21 +27,24 @@ class FamousoPlugin : public VRepPlugin
     typedef config::PEC Publisher;
     typedef config::SEC Subscriber;
 
-    enum Motors
+    enum class MotorType
     {
-      left,
-      right
+      velocity,
+      position
     };
 
-    std::map<std::string, int> objects;
-    float velocityBuffer[2];
-    Publisher* nosePubPtr;
-    Subscriber* lMotorSubPtr;
-    Subscriber* rMotorSubPtr;
+    struct MotorData
+    {
+      std::shared_ptr<Subscriber> sub;
+      int objectID;
+      float buffer;
+      MotorType type;
+    };
 
-    bool initialized;
+    std::map<int, std::shared_ptr<Publisher>> proximityPubs;
+    std::map<famouso::mw::Subject, MotorData> motorSubs;
 
-    void handleEvent(famouso::mw::api::SECCallBackData& cbd);
+    void motorCallBack(famouso::mw::api::SECCallBackData& e);
 
   protected:
     PluginLog log;
@@ -50,10 +52,13 @@ class FamousoPlugin : public VRepPlugin
     
   public:
     FamousoPlugin();
-    virtual unsigned char version() const {return 1;}
+    virtual unsigned char version() const {return 2;}
     virtual const std::string name() const {return "Famouso Plugin";}
     virtual bool load();
-    virtual void* open(int* auxiliaryData,void* customData,int* replyData);
     virtual void* action(int* auxiliaryData,void* customData,int* replyData);
     virtual void* close(int* auxiliaryData,void* customData,int* replyData);
+
+    static void simExtPublishProximityData(SLuaCallBack* p);
+    static void simExtSubscribeMotorVelocity(SLuaCallBack* p);
+    static void simExtSubscribeMotorPosition(SLuaCallBack* p);
 };
