@@ -2,14 +2,14 @@ VREP_PATH    :=${HOME}/software/vrep
 FAMOUSO_PATH :=${HOME}/software/famouso/
 TARGET    :=famouso
 
-SOURCES   := famousoPlugin.cpp
+SOURCES   := famousoPlugin.cpp ProximitySensor.cpp VREPSensor.cpp
 
 INCLUDE   := ./include ${FAMOUSO_PATH}/include ${FAMOUSO_PATH}/externals/include ${FAMOUSO_PATH}/externals/Boost
 SRC       := ./src
 BUILD     := ./build
 LIB       := ./lib
 
-CXXFLAGS  := -Wall -g -Os -fno-strict-aliasing
+CXXFLAGS  := -Wall -g -Os -fno-strict-aliasing -Wno-unused-local-typedefs
 LDFLAGS   := -O1
 INCLUDES  := ${INCLUDE}
 LDPATHS   := /usr/lib ${FAMOUSO_PATH}/lib/linux/standard/gcc-4.7.3

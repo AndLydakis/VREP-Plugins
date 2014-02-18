@@ -6,27 +6,13 @@
 #include <string>
 #include <map>
 
-#include <mw/el/EventLayerClientStub.h>
-#include <mw/api/PublisherEventChannel.h>
-#include <mw/api/SubscriberEventChannel.h>
+#include <config.h>
 #include <famouso.h>
-#include <mw/common/ExtendedEvent.h>
-
 #include <v_repLib.h>
+#include <ProximitySensor.h>
 
-class FamousoPlugin : public VRepPlugin
-{
+class FamousoPlugin : public VRepPlugin, private config::Famouso{
   private:
-    struct config
-    {
-      typedef famouso::mw::el::EventLayerClientStub EL;
-      typedef famouso::mw::api::PublisherEventChannel< EL > PEC;
-      typedef famouso::mw::api::SubscriberEventChannel< EL > SEC;
-    };
-
-    typedef config::PEC Publisher;
-    typedef config::SEC Subscriber;
-
     enum class MotorType
     {
       velocity,
@@ -41,10 +27,38 @@ class FamousoPlugin : public VRepPlugin
       MotorType type;
     };
 
-    std::map<int, std::shared_ptr<Publisher>> proximityPubs;
+    struct LaserData
+    {
+      std::shared_ptr<Subscriber> sub;
+      int objectID;
+      int obstackleID;
+      float x;
+      float y;
+      float angle;
+      float distance;
+    };
+
+/*    struct ProximityData
+    {
+      std::shared_ptr<Publisher> pub;
+      int objectID;
+      bool periodic;
+      float defaultValue;
+    };*/
+
+    struct PositionData
+    {
+      std::shared_ptr<Publisher> pub;
+      int objectID;
+    };
+
+    std::vector<ProximitySensor> proximitySensors;
+    std::vector<PositionData> positionPubs;
     std::map<famouso::mw::Subject, MotorData> motorSubs;
+    std::map<famouso::mw::Subject, LaserData> laserSubs;
 
     void motorCallBack(famouso::mw::api::SECCallBackData& e);
+    void laserCallBack(famouso::mw::api::SECCallBackData& e);
 
   protected:
     PluginLog log;
@@ -59,6 +73,8 @@ class FamousoPlugin : public VRepPlugin
     virtual void* close(int* auxiliaryData,void* customData,int* replyData);
 
     static void simExtPublishProximityData(SLuaCallBack* p);
+    static void simExtPublishObjectPosition(SLuaCallBack* p);
     static void simExtSubscribeMotorVelocity(SLuaCallBack* p);
     static void simExtSubscribeMotorPosition(SLuaCallBack* p);
+    static void simExtSubscribeLaserData(SLuaCallBack* p);
 };
