@@ -23,6 +23,7 @@ SOURCES       := $(addprefix ${SRC}/,${SOURCES})
 INCLUDES      := $(addprefix -I, ${INCLUDES} ${PLUGIN_INCLUDE} ${VREP_INCLUDE})
 SYMBOLS       := $(addprefix -D, ${SYMBOLS})
 TARGET        := ${LIB}/libv_repExt${TARGET}.so
+DEPS          := $(wildcard ${BUILD}/*.o.d) $(wildcard ${PLUGIN_BUILD}/*.o.d)
 
 vpath %.cpp ${VREP_SRC}:${PLUGIN_SRC}:${SRC}
 vpath %.o ${PLUGIN_BUILD}:${BUILD}
@@ -38,9 +39,11 @@ ${TARGET}: ${OBJECTS} ${PLUGIN_OBJS} ${VREP_OBJS} | ${LIB}
 	${CXX} -o $@ ${LDFLAGS} $^ ${LDPATHS} ${LIBS}
 
 ${OBJECTS}: ${BUILD}/%.o: %.cpp | ${BUILD}
+	${CXX} -c -MM -MT $@ ${CXXFLAGS} ${SYMBOLS} -o $@.d $< ${INCLUDES}
 	${CXX} -c ${CXXFLAGS} ${SYMBOLS} -o $@ $< ${INCLUDES}
 
 ${PLUGIN_BUILD}/%.o: %.cpp | ${PLUGIN_BUILD}
+	${CXX} -c -MM -MT $@ ${CXXFLAGS} ${SYMBOLS} -o $@.d $< ${INCLUDES}
 	${CXX} -c ${CXXFLAGS} ${SYMBOLS} -o $@ $< ${INCLUDES}
 
 install: ${TARGET}
@@ -51,3 +54,5 @@ clean:
 
 distclean: clean
 	rm -f ${PLUGIN_BUILD}/*.o
+
+-include ${DEPS}
