@@ -1,5 +1,17 @@
 #include <ProximitySensor.h>
 #include <mw/common/Event.h>
+#include <algorithm>
+
+using std::move;
+
+ProximitySensor::ProximitySensor(simInt id, const famouso::mw::Subject& subject,
+                                 bool periodic, float range) 
+  : VREPSensor(id, subject), mRange(range), mPeriodic(periodic)
+{}
+
+ProximitySensor::ProximitySensor(const ProximitySensor& copy) 
+  : VREPSensor(copy), mRange(copy.mRange.load()), mPeriodic(copy.mPeriodic)
+{}
 
 void ProximitySensor::update()
 {

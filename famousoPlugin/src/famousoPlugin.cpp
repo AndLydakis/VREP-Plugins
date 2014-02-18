@@ -22,7 +22,7 @@ void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
                << sensorTopic << "\" with publisher id " << sensorObject << std::endl;
 
     ProximitySensor sensor(sensorObject, sensorTopic, isPeriodic, sensorRange);
-    plugin.proximitySensors.push_back(std::move(sensor));
+    plugin.proximitySensors.push_back(sensor);
   }
 }
 

@@ -2,6 +2,7 @@
 
 #include <VREPSensor.h>
 #include <atomic>
+#include <algorithm>
 
 class ProximitySensor : public VREPSensor{
   private:
@@ -9,11 +10,10 @@ class ProximitySensor : public VREPSensor{
     bool mPeriodic;
 
   public:
+    ProximitySensor(const ProximitySensor& copy);
+    ProximitySensor& operator=(const ProximitySensor&) = delete;
     ProximitySensor(simInt id, const famouso::mw::Subject& subject,
-                    bool periodic=false, float range=0.0) 
-      : VREPSensor(id, subject), mRange(range), mPeriodic(periodic)
-    {}
-    ProximitySensor(const ProximitySensor&&);
+                    bool periodic=false, float range=0.0);
     virtual void update();
     bool isPeriodic() const   {return mPeriodic;}
     float range() const     {return mRange.load();}
