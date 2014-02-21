@@ -1,6 +1,7 @@
 #include <FamousoPlugin.h>
 
 #include <ProximitySensor.h>
+#include <PositionSensor.h>
 #include <Log.h>
 
 #include <list>
@@ -26,16 +27,15 @@ void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
 
 void FamousoPlugin::simExtPublishObjectPosition(SLuaCallBack* p)
 {
-  const char* objectName=simGetObjectName(p->inputInt[0]);
-  if(objectName)
+  const char* sensorName=simGetObjectName(p->inputInt[0]);
+  if(sensorName)
   {
-    Log::out() << "registering object " << objectName
-               << " for periodic position publication to subject \"" << p->inputChar
-               << "\" with publisher id " << p->inputInt[0] << std::endl;
-    auto pub=std::shared_ptr<Publisher>(new Publisher(p->inputChar));
-    PositionData data={pub, p->inputInt[0]};
-    plugin.positionPubs.push_back(data);
-    pub->announce();
+    const char* sensorTopic  = p->inputChar;
+    simInt      sensorObject = p->inputInt[0];
+    
+    plugin.mSensors.emplace_back(new PositionSensor(sensorObject, sensorTopic));
+
+    Log::out() << "Registering " << *plugin.mSensors.back() << std::endl;
   }
 }
 
@@ -148,24 +148,6 @@ void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
   for(auto sensor : mSensors)
     sensor->update();
 
-  for(auto i : positionPubs)
-  {
-    float position[3];
-    int res=simGetObjectPosition(i.objectID, -1, position);
-    if(res!=-1)
-    {
-      famouso::mw::Event e(i.pub->subject());
-      float temp[3];
-      for(unsigned int j=0;j<3;j++)
-        temp[j]=position[j];
-      e.data=reinterpret_cast<uint8_t*>(temp);
-      e.length=sizeof(temp);
-      i.pub->publish(e);
-    }
-    if(res==-1)
-      Log::err() << "Error publishing distance" << std::endl;
-  }
-
   for(auto i : motorSubs)
   {
     switch(i.second.type)
@@ -203,6 +185,7 @@ void* FamousoPlugin::close(int* auxiliaryData,void* customData,int* replyData)
 {
   mSensors.clear();
   motorSubs.clear();
+  laserSubs.clear();
   Log::out() << "closed" << std::endl;
   return NULL;
 }

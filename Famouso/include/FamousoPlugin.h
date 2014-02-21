@@ -39,14 +39,7 @@ class FamousoPlugin : public VREPPlugin, private config::Famouso{
       float distance;
     };
 
-    struct PositionData
-    {
-      std::shared_ptr<Publisher> pub;
-      int objectID;
-    };
-
     std::vector<std::shared_ptr<VREPSensor>> mSensors;
-    std::vector<PositionData> positionPubs;
     std::map<famouso::mw::Subject, MotorData> motorSubs;
     std::map<famouso::mw::Subject, LaserData> laserSubs;
 

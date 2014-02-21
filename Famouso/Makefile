@@ -4,7 +4,7 @@ FAMOUSO_PATH :=${HOME}/software/famouso/
 include ${FAMOUSO_PATH}/make/famousoApp.mk
 
 CXXFLAGS     += -O0
-SOURCES      := FamousoPlugin.cpp ProximitySensor.cpp VREPSensor.cpp
+SOURCES      := FamousoPlugin.cpp ProximitySensor.cpp VREPSensor.cpp PositionSensor.cpp
 TARGET       := Famouso
 INCLUDES     += ./include
 SRC          := ./src
