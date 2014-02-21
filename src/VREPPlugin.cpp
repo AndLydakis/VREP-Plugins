@@ -1,5 +1,4 @@
-#include <vrepPlugin.h>
-
+#include <VREPPlugin.h>
 #include <iostream>
 
 VRepPlugin& VRepPlugin::getInstance()

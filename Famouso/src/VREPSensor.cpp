@@ -15,7 +15,7 @@ VREPSensor::VREPSensor(const VREPSensor& copy) : config::Famouso::Publisher(copy
 
 std::ostream& operator<<(std::ostream& out, const VREPSensor& sensor){
   auto format=out.flags();
-  out << "Sensor " << sensor.name() << " with id " << sensor.id() << " published to " << std::hex << sensor.subject().value();
+  out << "Sensor " << sensor.name() << " with id " << sensor.id() << " published to 0x" << std::hex << sensor.subject().value();
   out.setf(format);
   return out;
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vrepPlugin.h>
+#include <VREPPlugin.h>
 
 #include <string>
 #include <map>
@@ -37,14 +37,6 @@ class FamousoPlugin : public VRepPlugin, private config::Famouso{
       float distance;
     };
 
-/*    struct ProximityData
-    {
-      std::shared_ptr<Publisher> pub;
-      int objectID;
-      bool periodic;
-      float defaultValue;
-    };*/
-
     struct PositionData
     {
       std::shared_ptr<Publisher> pub;
@@ -58,7 +50,7 @@ class FamousoPlugin : public VRepPlugin, private config::Famouso{
 
     void motorCallBack(famouso::mw::api::SECCallBackData& e);
     void laserCallBack(famouso::mw::api::SECCallBackData& e);
-
+   
   public:
     FamousoPlugin();
     virtual unsigned char version() const {return 2;}

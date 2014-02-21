@@ -1,7 +1,7 @@
 VREP_PATH :=${HOME}/software/vrep
-TARGET    :=dummy
+TARGET    :=Dummy
 
-SOURCES   := dummyPlugin.cpp
+SOURCES   := DummyPlugin.cpp
 
 INCLUDE   := ./include
 SRC       := ./src

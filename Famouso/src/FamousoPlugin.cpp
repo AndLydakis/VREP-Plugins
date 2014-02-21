@@ -1,10 +1,15 @@
-#include <iostream>
+#include <FamousoPlugin.h>
+
+#include <Log.h>
+
 #include <list>
 #include <algorithm>
 
-#include "famousoPlugin.h"
-
 FamousoPlugin plugin;
+
+FamousoPlugin::FamousoPlugin(){
+  Log::name(name());
+}
 
 void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
 {
@@ -12,17 +17,13 @@ void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
   if(proximityName)
   {
     const char* sensorTopic = p->inputChar;
-    simInt sensorObject = p->inputInt[0];
-    const char* sensorName = simGetObjectName(sensorObject);
-    simBool isPeriodic = p->inputBool[0];
-    simFloat sensorRange = p->inputFloat[0];
+    simInt sensorObject     = p->inputInt[0];
+    simBool isPeriodic      = p->inputBool[0];
+    simFloat sensorRange    = p->inputFloat[0];
     
-    Log::out() << "registering proximity sensor " << sensorName
-               << " for " << (isPeriodic?"":"a") << "periodic publication to subject \"" 
-               << sensorTopic << "\" with publisher id " << sensorObject << std::endl;
+    plugin.proximitySensors.emplace_back(sensorObject, sensorTopic, isPeriodic, sensorRange);
 
-    ProximitySensor sensor(sensorObject, sensorTopic, isPeriodic, sensorRange);
-    plugin.proximitySensors.push_back(sensor);
+    Log::out() << "Registering " << plugin.proximitySensors.back() << std::endl;
   }
 }
 
@@ -102,9 +103,6 @@ void FamousoPlugin::laserCallBack(famouso::mw::api::SECCallBackData& e)
     laserSubs[e.subject].distance=data[3];
   }
 }
-
-FamousoPlugin::FamousoPlugin() :  Log::out()(*this, std::cerr), Log::err()(*this, std::cerr)
-{}
 
 bool FamousoPlugin::load()
 {

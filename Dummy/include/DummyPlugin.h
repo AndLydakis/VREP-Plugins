@@ -1,6 +1,6 @@
 #pragma once
 
-#include <vrepPlugin.h>
+#include <VREPPlugin.h>
 
 class DummyPlugin: public VRepPlugin
 {
