@@ -15,7 +15,7 @@ VREP_OBJS     := $(addsuffix .o, $(addprefix ${PLUGIN_BUILD}/, $(basename ${VREP
 PLUGIN_OBJS   := $(addsuffix .o, $(addprefix ${PLUGIN_BUILD}/, $(basename ${PLUGIN_SOURCES})))
 OBJECTS       := $(addsuffix .o, $(addprefix ${BUILD}/, $(basename ${SOURCES})))
 
-CXXFLAGS      += -std=gnu++11
+CXXFLAGS      += -std=gnu++11 -fPIC
 LDFLAGS       += -shared
 LIBS          := $(addprefix -l, ${LIBS} dl boost_filesystem)
 LDPATHS       := $(addprefix -L, ${LDPATHS})
