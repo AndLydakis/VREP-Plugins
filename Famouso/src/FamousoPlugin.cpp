@@ -1,5 +1,6 @@
 #include <FamousoPlugin.h>
 
+#include <ProximitySensor.h>
 #include <Log.h>
 
 #include <list>
@@ -7,23 +8,19 @@
 
 FamousoPlugin plugin;
 
-FamousoPlugin::FamousoPlugin(){
-  Log::name(name());
-}
-
 void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
 {
-  const char* proximityName=simGetObjectName(p->inputInt[0]);
-  if(proximityName)
+  const char* sensorName=simGetObjectName(p->inputInt[0]);
+  if(sensorName)
   {
-    const char* sensorTopic = p->inputChar;
-    simInt sensorObject     = p->inputInt[0];
-    simBool isPeriodic      = p->inputBool[0];
-    simFloat sensorRange    = p->inputFloat[0];
+    const char* sensorTopic  = p->inputChar;
+    simInt      sensorObject = p->inputInt[0];
+    simBool     isPeriodic   = p->inputBool[0];
+    simFloat    sensorRange  = p->inputFloat[0];
     
-    plugin.proximitySensors.emplace_back(sensorObject, sensorTopic, isPeriodic, sensorRange);
+    plugin.mSensors.emplace_back(new ProximitySensor(sensorObject, sensorTopic, isPeriodic, sensorRange));
 
-    Log::out() << "Registering " << plugin.proximitySensors.back() << std::endl;
+    Log::out() << "Registering " << *plugin.mSensors.back() << std::endl;
   }
 }
 
@@ -106,6 +103,7 @@ void FamousoPlugin::laserCallBack(famouso::mw::api::SECCallBackData& e)
 
 bool FamousoPlugin::load()
 {
+  Log::name(name());
   famouso::init<config::Famouso>();
 
   int argType[5]={4, sim_lua_arg_int, sim_lua_arg_string, sim_lua_arg_bool, sim_lua_arg_float};
@@ -147,8 +145,8 @@ bool FamousoPlugin::load()
 
 void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
 {
-  for(auto& sensor : proximitySensors)
-    sensor.update();
+  for(auto sensor : mSensors)
+    sensor->update();
 
   for(auto i : positionPubs)
   {
@@ -203,10 +201,8 @@ void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
 
 void* FamousoPlugin::close(int* auxiliaryData,void* customData,int* replyData)
 {
-  proximitySensors.clear();
+  mSensors.clear();
   motorSubs.clear();
   Log::out() << "closed" << std::endl;
   return NULL;
 }
-
-

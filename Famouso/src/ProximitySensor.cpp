@@ -1,12 +1,7 @@
 #include <ProximitySensor.h>
 
 #include <Log.h>
-
 #include <mw/common/Event.h>
-
-#include <algorithm>
-
-using std::move;
 
 ProximitySensor::ProximitySensor(simInt id, const famouso::mw::Subject& subject, 
                                  bool periodic, float range)
@@ -36,11 +31,11 @@ void ProximitySensor::update()
   publish(e);
 }
 
-std::ostream& operator<<(std::ostream& out, const ProximitySensor& sensor){
-  out << "Proximity " << static_cast<const VREPSensor&>(sensor);
-  if(sensor.isPeriodic())
-    out << " periodically with max range " << sensor.range() << "m";
+void ProximitySensor::print(std::ostream& out) const{
+  out << "Proximity ";
+  VREPSensor::print(out);
+  if(isPeriodic())
+    out << " periodically with max range " << range() << "m";
   else
     out << " aperiodically";
-  return out;
 }

@@ -2,14 +2,9 @@
 
 #include <Log.h>
 
-DummyPlugin::DummyPlugin()
+void DummyPlugin::load()
 {
-  Log::name(name());
-}
-
-DummyPlugin::~DummyPlugin()
-{
-
+    Log::name(name());
 }
 
 unsigned char DummyPlugin::version() const

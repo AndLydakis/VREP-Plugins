@@ -2,11 +2,12 @@
 
 #include <VREPPlugin.h>
 
-class DummyPlugin: public VRepPlugin
+class DummyPlugin: public VREPPlugin
 {
     public:
-        DummyPlugin();
-        virtual ~DummyPlugin();
+        DummyPlugin(){}
+        DummyPlugin& operator=(const DummyPlugin&) = delete;
+        virtual ~DummyPlugin(){}
         virtual unsigned char version() const;
         virtual bool load();
         virtual bool unload();

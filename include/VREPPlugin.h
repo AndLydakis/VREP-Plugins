@@ -2,15 +2,16 @@
 
 #include <string>
 
-class VRepPlugin
+class VREPPlugin
 {
     private:
-        static VRepPlugin* instance;
+        static VREPPlugin* instance;
 
     public:
-        static VRepPlugin& getInstance();
-        VRepPlugin();
-        virtual ~VRepPlugin();
+        static VREPPlugin& getInstance();
+        VREPPlugin();
+        virtual ~VREPPlugin();
+        VREPPlugin& operator=(const VREPPlugin&) = delete;
         virtual unsigned char version() const=0;
         virtual const std::string name() const=0;
         virtual bool load();

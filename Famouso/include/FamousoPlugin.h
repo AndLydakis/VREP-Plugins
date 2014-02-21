@@ -1,16 +1,18 @@
 #pragma once
 
 #include <VREPPlugin.h>
+#include <VREPSensor.h>
 
 #include <string>
 #include <map>
+#include <memory>
 
 #include <config.h>
 #include <famouso.h>
 #include <v_repLib.h>
-#include <ProximitySensor.h>
 
-class FamousoPlugin : public VRepPlugin, private config::Famouso{
+
+class FamousoPlugin : public VREPPlugin, private config::Famouso{
   private:
     enum class MotorType
     {
@@ -43,7 +45,7 @@ class FamousoPlugin : public VRepPlugin, private config::Famouso{
       int objectID;
     };
 
-    std::vector<ProximitySensor> proximitySensors;
+    std::vector<std::shared_ptr<VREPSensor>> mSensors;
     std::vector<PositionData> positionPubs;
     std::map<famouso::mw::Subject, MotorData> motorSubs;
     std::map<famouso::mw::Subject, LaserData> laserSubs;
@@ -52,7 +54,9 @@ class FamousoPlugin : public VRepPlugin, private config::Famouso{
     void laserCallBack(famouso::mw::api::SECCallBackData& e);
    
   public:
-    FamousoPlugin();
+    FamousoPlugin(){}
+    virtual ~FamousoPlugin(){}
+    FamousoPlugin& operator=(const FamousoPlugin&) = delete;
     virtual unsigned char version() const {return 2;}
     virtual const std::string name() const {return "Famouso Plugin";}
     virtual bool load();

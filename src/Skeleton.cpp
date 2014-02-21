@@ -8,7 +8,7 @@ LIBRARY vrepLib;
 
 extern "C" unsigned char v_repStart(void* reservedPointer,int reservedInt)
 {
-  VRepPlugin& plugin=VRepPlugin::getInstance();
+  VREPPlugin& plugin=VREPPlugin::getInstance();
 
 	auto libPath=boost::filesystem::current_path();
 	libPath/="libv_rep.so";
@@ -44,7 +44,7 @@ extern "C" unsigned char v_repStart(void* reservedPointer,int reservedInt)
 
 extern "C" void v_repEnd()
 {
-  VRepPlugin& plugin=VRepPlugin::getInstance();
+  VREPPlugin& plugin=VREPPlugin::getInstance();
   if(!plugin.unload())
     std::cout << "Error unloading " << plugin.name() << std::endl;
 	unloadVrepLibrary(vrepLib);
@@ -59,7 +59,7 @@ extern "C" void* v_repMessage(int message,int* auxiliaryData,void* customData,in
 	simSetIntegerParameter(sim_intparam_error_report_mode,sim_api_errormessage_ignore);
 	void* retVal=NULL;
 
-  VRepPlugin& plugin=VRepPlugin::getInstance();
+  VREPPlugin& plugin=VREPPlugin::getInstance();
 
   switch(message)
   {
