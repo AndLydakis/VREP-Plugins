@@ -17,7 +17,7 @@ void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
     simBool isPeriodic = p->inputBool[0];
     simFloat sensorRange = p->inputFloat[0];
     
-    plugin.log << "registering proximity sensor " << sensorName
+    Log::out() << "registering proximity sensor " << sensorName
                << " for " << (isPeriodic?"":"a") << "periodic publication to subject \"" 
                << sensorTopic << "\" with publisher id " << sensorObject << std::endl;
 
@@ -31,7 +31,7 @@ void FamousoPlugin::simExtPublishObjectPosition(SLuaCallBack* p)
   const char* objectName=simGetObjectName(p->inputInt[0]);
   if(objectName)
   {
-    plugin.log << "registering object " << objectName
+    Log::out() << "registering object " << objectName
                << " for periodic position publication to subject \"" << p->inputChar
                << "\" with publisher id " << p->inputInt[0] << std::endl;
     auto pub=std::shared_ptr<Publisher>(new Publisher(p->inputChar));
@@ -46,7 +46,7 @@ void FamousoPlugin::simExtSubscribeMotorVelocity(SLuaCallBack* p)
   const char* motorName=simGetObjectName(p->inputInt[0]);
   if(motorName)
   {
-    plugin.log << "subscribing for velocity of motor " << motorName
+    Log::out() << "subscribing for velocity of motor " << motorName
                << " on subject \"" << p->inputChar
                << "\"" << std::endl;
     std::shared_ptr<Subscriber> sub(new Subscriber(p->inputChar));
@@ -61,7 +61,7 @@ void FamousoPlugin::simExtSubscribeMotorPosition(SLuaCallBack* p)
   const char* motorName=simGetObjectName(p->inputInt[0]);
   if(motorName)
   {
-    plugin.log << "subscribing for position of motor " << motorName
+    Log::out() << "subscribing for position of motor " << motorName
                << " on subject \"" << p->inputChar
                << "\"" << std::endl;
     std::shared_ptr<Subscriber> sub(new Subscriber(p->inputChar));
@@ -76,7 +76,7 @@ void FamousoPlugin::simExtSubscribeLaserData(SLuaCallBack* p)
   const char* obstackleName=simGetObjectName(p->inputInt[0]);
   if(obstackleName)
   {
-    plugin.log << "subscribing for laser scanner data of " << simGetObjectName(p->objectID) << " detecting " << obstackleName
+    Log::out() << "subscribing for laser scanner data of " << simGetObjectName(p->objectID) << " detecting " << obstackleName
                << " on subject \"" << p->inputChar << "\"" << std::endl;
     std::shared_ptr<Subscriber> sub(new Subscriber(p->inputChar));
     plugin.laserSubs[sub->subject()]={sub, p->objectID, p->inputInt[0], 0.0f, 0.0f};
@@ -103,7 +103,7 @@ void FamousoPlugin::laserCallBack(famouso::mw::api::SECCallBackData& e)
   }
 }
 
-FamousoPlugin::FamousoPlugin() :  log(*this, std::cerr), errorLog(*this, std::cerr)
+FamousoPlugin::FamousoPlugin() :  Log::out()(*this, std::cerr), Log::err()(*this, std::cerr)
 {}
 
 bool FamousoPlugin::load()
@@ -116,7 +116,7 @@ bool FamousoPlugin::load()
                                   argType,
                                   &FamousoPlugin::simExtPublishProximityData
                                   )==-1)
-    errorLog << "Error registering custom lua function simExtFamousoPublishProximityData" << std::endl;
+    Log::err() << "Error registering custom lua function simExtFamousoPublishProximityData" << std::endl;
   argType[0]=2;
   argType[1]=sim_lua_arg_int;
   argType[2]=sim_lua_arg_string;
@@ -125,25 +125,25 @@ bool FamousoPlugin::load()
                                   argType,
                                   &FamousoPlugin::simExtPublishObjectPosition
                                   )==-1)
-    errorLog << "Error registering custom lua function simExtFamousoPublishObjectPosition" << std::endl;
+    Log::err() << "Error registering custom lua function simExtFamousoPublishObjectPosition" << std::endl;
   if(simRegisterCustomLuaFunction("simExtFamousoSubscribeMotorVelocity",
                                   "objectID of motorized joint@subject of motor data",
                                   argType,
                                   &FamousoPlugin::simExtSubscribeMotorVelocity
                                   )==-1)
-    errorLog << "Error registering custom lua function simExtFamousoSubscribeMotorVelocity" << std::endl;
+    Log::err() << "Error registering custom lua function simExtFamousoSubscribeMotorVelocity" << std::endl;
   if(simRegisterCustomLuaFunction("simExtFamousoSubscribeMotorPosition",
                                   "objectID of motorized joint@subject of motor data",
                                   argType,
                                   &FamousoPlugin::simExtSubscribeMotorPosition
                                   )==-1)
-    errorLog << "Error registering custom lua function simExtFamousoSubscribeMotorPosition" << std::endl;
+    Log::err() << "Error registering custom lua function simExtFamousoSubscribeMotorPosition" << std::endl;
   if(simRegisterCustomLuaFunction("simExtFamousoSubscribeLaserData",
                                   "objectID of obstackle@subject of laser data",
                                   argType,
                                   &FamousoPlugin::simExtSubscribeLaserData
                                   )==-1)
-    errorLog << "Error registering custom lua function simExtFamousoSubscribeLaserData" << std::endl;
+    Log::err() << "Error registering custom lua function simExtFamousoSubscribeLaserData" << std::endl;
   return true;
 }
 
@@ -167,7 +167,7 @@ void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
       i.pub->publish(e);
     }
     if(res==-1)
-      errorLog << "Error publishing distance" << std::endl;
+      Log::err() << "Error publishing distance" << std::endl;
   }
 
   for(auto i : motorSubs)
@@ -176,11 +176,11 @@ void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
     {
       case(MotorType::velocity):
         if(simSetJointTargetVelocity(i.second.objectID, i.second.buffer)==-1)
-          errorLog << "Error setting target velocity for motor " << simGetObjectName(i.second.objectID) << std::endl;
+          Log::err() << "Error setting target velocity for motor " << simGetObjectName(i.second.objectID) << std::endl;
         break;
       case(MotorType::position):
         if(simSetJointTargetPosition(i.second.objectID, i.second.buffer)==-1)
-          errorLog << "Error setting target position for motor " << simGetObjectName(i.second.objectID) << std::endl;
+          Log::err() << "Error setting target position for motor " << simGetObjectName(i.second.objectID) << std::endl;
         break;
     }
   }
@@ -189,16 +189,16 @@ void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
   {
     simInt prop=simGetObjectSpecialProperty(i.second.obstackleID);
     if(prop==-1)
-      errorLog << "Error getting obstackle special property" << std::endl;
+      Log::err() << "Error getting obstackle special property" << std::endl;
     if(i.second.distance>0.0f)
       prop|=sim_objectspecialproperty_collidable;
     else
       prop&=~sim_objectspecialproperty_collidable;
     if(simSetObjectProperty(i.second.obstackleID, prop)==-1)
-      errorLog << "Error setting obstackle special property" << std::endl;
+      Log::err() << "Error setting obstackle special property" << std::endl;
     float position[3]={i.second.y, 0.0f, i.second.x};
     if(simSetObjectPosition(i.second.obstackleID, i.second.objectID, position)==-1)
-      errorLog << "Error moving obstackle" << std::endl;
+      Log::err() << "Error moving obstackle" << std::endl;
   }
   return NULL;
 }
@@ -207,7 +207,7 @@ void* FamousoPlugin::close(int* auxiliaryData,void* customData,int* replyData)
 {
   proximitySensors.clear();
   motorSubs.clear();
-  log << "closed" << std::endl;
+  Log::out() << "closed" << std::endl;
   return NULL;
 }
 

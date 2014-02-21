@@ -1,8 +1,8 @@
 #include "dummyPlugin.h"
 
-#include <iostream>
+#include <Log.h>
 
-DummyPlugin::DummyPlugin() : log(*this, std::cout)
+DummyPlugin::DummyPlugin()
 {
     
 }
@@ -24,13 +24,13 @@ const std::string DummyPlugin::name() const
 
 bool DummyPlugin::load()
 {
-    log << "loaded" << std::endl;
+  Log::out() << "loaded" << std::endl;
     return true;
 }
 
 bool DummyPlugin::unload()
 {
-    log << "unloaded" << std::endl;
+  Log::out() << "unloaded" << std::endl;
     return true;
 }
 

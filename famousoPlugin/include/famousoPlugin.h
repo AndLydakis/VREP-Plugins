@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vrepPlugin.h>
-#include <pluginLog.h>
 
 #include <string>
 #include <map>
@@ -60,10 +59,6 @@ class FamousoPlugin : public VRepPlugin, private config::Famouso{
     void motorCallBack(famouso::mw::api::SECCallBackData& e);
     void laserCallBack(famouso::mw::api::SECCallBackData& e);
 
-  protected:
-    PluginLog log;
-    PluginLog errorLog;
-    
   public:
     FamousoPlugin();
     virtual unsigned char version() const {return 2;}

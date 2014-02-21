@@ -2,6 +2,8 @@
 #include <mw/common/Event.h>
 #include <algorithm>
 
+#include <Log.h>
+
 using std::move;
 
 ProximitySensor::ProximitySensor(simInt id, const famouso::mw::Subject& subject,
@@ -21,7 +23,7 @@ void ProximitySensor::update()
   switch(res){
     case(1):  temp=distanceParameter[3];
               break;
-    case(-1): //errorLog << "Error publishing distance" << std::endl;
+    case(-1): Log::err() << "Error publishing distance" << std::endl;
               return;
   }
   if(!isPeriodic())

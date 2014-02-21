@@ -1,12 +1,9 @@
 #pragma once
 
 #include <vrepPlugin.h>
-#include <pluginLog.h>
 
 class DummyPlugin: public VRepPlugin
 {
-    protected:
-        PluginLog log;
     public:
         DummyPlugin();
         virtual ~DummyPlugin();
