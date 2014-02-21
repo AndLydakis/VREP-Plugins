@@ -9,7 +9,7 @@ VREP_INCLUDE  := ${VREP_PATH}/programming/include
 VREP_SRC      := ${VREP_PATH}/programming/common
 
 VREP_SOURCES  := v_repLib.cpp
-PLUGIN_SOURCES:= pluginSkeleton.cpp vrepPlugin.cpp Log.cpp
+PLUGIN_SOURCES:= Skeleton.cpp VREPPlugin.cpp Log.cpp
 
 VREP_OBJS     := $(addsuffix .o, $(addprefix ${PLUGIN_BUILD}/, $(basename ${VREP_SOURCES})))
 PLUGIN_OBJS   := $(addsuffix .o, $(addprefix ${PLUGIN_BUILD}/, $(basename ${PLUGIN_SOURCES})))
@@ -50,9 +50,8 @@ install: ${TARGET}
 	cp $< ${VREP_PATH}
 
 clean:
-	rm -f ${TARGET} ${BUILD}/*.o
-
-distclean: clean
-	rm -f ${PLUGIN_BUILD}/*.o
+	rm -f  ${TARGET} ${OBJECTS} ${DEPS}
+	rm -rf ${PLUGIN_BUILD} 
+	rmdir  ${BUILD} ${LIB}
 
 -include ${DEPS}
