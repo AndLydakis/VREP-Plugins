@@ -2,6 +2,8 @@
 
 #include <VREPPlugin.h>
 #include <VREPSensor.h>
+#include <VREPActuator.h>
+
 
 #include <string>
 #include <map>
@@ -20,14 +22,6 @@ class FamousoPlugin : public VREPPlugin, private config::Famouso{
       position
     };
 
-    struct MotorData
-    {
-      std::shared_ptr<Subscriber> sub;
-      int objectID;
-      float buffer;
-      MotorType type;
-    };
-
     struct LaserData
     {
       std::shared_ptr<Subscriber> sub;
@@ -39,11 +33,10 @@ class FamousoPlugin : public VREPPlugin, private config::Famouso{
       float distance;
     };
 
-    std::vector<std::shared_ptr<VREPSensor>> mSensors;
-    std::map<famouso::mw::Subject, MotorData> motorSubs;
+    std::vector<std::unique_ptr<VREPSensor>> mSensors;
+    std::vector<std::unique_ptr<VREPActuator>> mActuators;
     std::map<famouso::mw::Subject, LaserData> laserSubs;
 
-    void motorCallBack(famouso::mw::api::SECCallBackData& e);
     void laserCallBack(famouso::mw::api::SECCallBackData& e);
    
   public:

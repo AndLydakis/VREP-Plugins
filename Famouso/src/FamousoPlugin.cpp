@@ -2,10 +2,9 @@
 
 #include <ProximitySensor.h>
 #include <PositionSensor.h>
+#include <VelocityMotor.h>
+#include <PositionMotor.h>
 #include <Log.h>
-
-#include <list>
-#include <algorithm>
 
 FamousoPlugin plugin;
 
@@ -41,31 +40,29 @@ void FamousoPlugin::simExtPublishObjectPosition(SLuaCallBack* p)
 
 void FamousoPlugin::simExtSubscribeMotorVelocity(SLuaCallBack* p)
 {
-  const char* motorName=simGetObjectName(p->inputInt[0]);
-  if(motorName)
+  const char* actuatorName=simGetObjectName(p->inputInt[0]);
+  if(actuatorName)
   {
-    Log::out() << "subscribing for velocity of motor " << motorName
-               << " on subject \"" << p->inputChar
-               << "\"" << std::endl;
-    std::shared_ptr<Subscriber> sub(new Subscriber(p->inputChar));
-    plugin.motorSubs[sub->subject()]={sub, p->inputInt[0], 0.0f, MotorType::velocity};
-    sub->subscribe();
-    sub->callback.bind<FamousoPlugin, &FamousoPlugin::motorCallBack>(&plugin);
+    const char* actuatorTopic  = p->inputChar;
+    simInt      actuatorObject = p->inputInt[0];
+
+    plugin.mActuators.emplace_back(new VelocityMotor(actuatorObject, actuatorTopic));
+
+    Log::out() << "Registering " << *plugin.mActuators.back() << std::endl;
   }
 }
 
 void FamousoPlugin::simExtSubscribeMotorPosition(SLuaCallBack* p)
 {
-  const char* motorName=simGetObjectName(p->inputInt[0]);
-  if(motorName)
+  const char* actuatorName=simGetObjectName(p->inputInt[0]);
+  if(actuatorName)
   {
-    Log::out() << "subscribing for position of motor " << motorName
-               << " on subject \"" << p->inputChar
-               << "\"" << std::endl;
-    std::shared_ptr<Subscriber> sub(new Subscriber(p->inputChar));
-    plugin.motorSubs[sub->subject()]={sub, p->inputInt[0], 0.0f, MotorType::position};
-    sub->subscribe();
-    sub->callback.bind<FamousoPlugin, &FamousoPlugin::motorCallBack>(&plugin);
+    const char* actuatorTopic  = p->inputChar;
+    simInt      actuatorObject = p->inputInt[0];
+
+    plugin.mActuators.emplace_back(new PositionMotor(actuatorObject, actuatorTopic));
+
+    Log::out() << "Registering " << *plugin.mActuators.back() << std::endl;
   }
 }
 
@@ -81,12 +78,6 @@ void FamousoPlugin::simExtSubscribeLaserData(SLuaCallBack* p)
     sub->subscribe();
     sub->callback.bind<FamousoPlugin, &FamousoPlugin::laserCallBack>(&plugin);
   }
-}
-
-void FamousoPlugin::motorCallBack(famouso::mw::api::SECCallBackData& e)
-{
-  if(e.length==sizeof(float))
-    motorSubs[e.subject].buffer=*reinterpret_cast<float*>(e.data);
 }
 
 void FamousoPlugin::laserCallBack(famouso::mw::api::SECCallBackData& e)
@@ -145,23 +136,11 @@ bool FamousoPlugin::load()
 
 void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
 {
-  for(auto sensor : mSensors)
+  for(auto& sensor : mSensors)
     sensor->update();
 
-  for(auto i : motorSubs)
-  {
-    switch(i.second.type)
-    {
-      case(MotorType::velocity):
-        if(simSetJointTargetVelocity(i.second.objectID, i.second.buffer)==-1)
-          Log::err() << "Error setting target velocity for motor " << simGetObjectName(i.second.objectID) << std::endl;
-        break;
-      case(MotorType::position):
-        if(simSetJointTargetPosition(i.second.objectID, i.second.buffer)==-1)
-          Log::err() << "Error setting target position for motor " << simGetObjectName(i.second.objectID) << std::endl;
-        break;
-    }
-  }
+  for(auto& actuator : mActuators)
+    actuator->update();
 
   for(auto i : laserSubs)
   {
@@ -184,7 +163,7 @@ void* FamousoPlugin::action(int* auxiliaryData,void* customData,int* replyData)
 void* FamousoPlugin::close(int* auxiliaryData,void* customData,int* replyData)
 {
   mSensors.clear();
-  motorSubs.clear();
+  mActuators.clear();
   laserSubs.clear();
   Log::out() << "closed" << std::endl;
   return NULL;
