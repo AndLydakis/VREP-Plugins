@@ -1,25 +1,20 @@
 #pragma once
 
-#include <v_repLib.h>
 #include <config.h>
+#include <mw/common/Event.h>
+#include <VREPObject.h>
 
-#include <ostream>
-
-class VREPSensor : protected config::Famouso::Publisher{
+class VREPSensor : public VREPObject{
   private:
-    const simInt mId;
+    config::Famouso::Publisher pub;
   protected:
+    typedef famouso::mw::Event Event;
     virtual void print(std::ostream& out) const;
+    void publish(const Event& e);
   public:
-    VREPSensor(simInt id, const famouso::mw::Subject& subject);
+    typedef famouso::mw::Subject Subject;
+    VREPSensor(simInt id, const Subject& subject);
     VREPSensor(const VREPSensor& copy);
-    VREPSensor& operator=(const VREPSensor& copy) = delete;
-    virtual ~VREPSensor(){}
-    virtual void update() = 0;
-    simInt id() const{return mId;}
-    std::string name() const {return simGetObjectName(mId);}
-    const famouso::mw::Subject& subject() const {return config::Famouso::Publisher::subject();}
-  friend std::ostream& operator<<(std::ostream&, const VREPSensor&);
+    virtual ~VREPSensor();
+    const Subject& subject() const;
 };
-
-std::ostream& operator<<(std::ostream& out, const VREPSensor& sensor);
