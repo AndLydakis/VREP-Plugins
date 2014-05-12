@@ -1,20 +1,40 @@
 #pragma once
 
 #include <config.h>
-#include <mw/common/Event.h>
+#include <SensorDataPublisher.h>
 #include <VREPObject.h>
 
+template<typename SensorEvent>
 class VREPSensor : public VREPObject{
   private:
-    config::Famouso::Publisher pub;
+    SensorDataPublisher<config::Famouso::EL, SensorEvent> pub;
   protected:
-    typedef famouso::mw::Event Event;
-    virtual void print(std::ostream& out) const;
-    void publish(const Event& e);
+    using Event = SensorEvent;
+
+    virtual void print(std::ostream& out) const{
+      auto format=out.flags();
+      out << "Sensor " << name() << " with id " << id() << " published to 0x" << std::hex << subject().value();
+      out.setf(format);
+    }
+
+    void publish(const Event& e){
+      pub.publish(e);
+    }
+    
   public:
-    typedef famouso::mw::Subject Subject;
-    VREPSensor(simInt id, const Subject& subject);
-    VREPSensor(const VREPSensor& copy);
-    virtual ~VREPSensor();
-    const Subject& subject() const;
+    using Subject = famouso::mw::Subject;
+
+    VREPSensor(simInt id, const Subject& subject)
+      : VREPObject(id), pub(subject){
+      pub.announce();
+    }
+
+    VREPSensor(const VREPSensor& copy)
+      : VREPObject(copy), pub(copy.subject()){
+      pub.announce();
+    }
+
+    virtual ~VREPSensor(){}
+
+    const Subject& subject() const { return pub.subject(); }
 };

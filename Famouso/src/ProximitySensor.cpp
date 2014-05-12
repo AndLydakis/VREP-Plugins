@@ -5,11 +5,11 @@
 
 ProximitySensor::ProximitySensor(simInt id, const famouso::mw::Subject& subject, 
                                  bool periodic, float range)
-  : VREPSensor(id, subject), mRange(range), mPeriodic(periodic)
+  : Base(id, subject), mRange(range), mPeriodic(periodic)
 {}
 
 ProximitySensor::ProximitySensor(const ProximitySensor& copy) 
-  : VREPSensor(copy), mRange(copy.mRange.load()), mPeriodic(copy.mPeriodic)
+  : Base(copy), mRange(copy.mRange.load()), mPeriodic(copy.mPeriodic)
 {}
 
 void ProximitySensor::update()
@@ -25,10 +25,10 @@ void ProximitySensor::update()
   }
   if(!isPeriodic())
     return;
-  famouso::mw::Event e(subject());
-  e.data=reinterpret_cast<uint8_t*>(&temp);
-  e.length=sizeof(temp);
-  publish(e);
+  
+  Event e;
+  e.attribute(id::attribute::Distance()).value()={{temp}};
+  this->publish(e);
 }
 
 void ProximitySensor::print(std::ostream& out) const{

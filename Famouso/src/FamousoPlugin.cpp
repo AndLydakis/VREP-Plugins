@@ -1,7 +1,7 @@
 #include <FamousoPlugin.h>
 
 #include <ProximitySensor.h>
-#include <PositionSensor.h>
+//#include <PositionSensor.h>
 #include <VelocityMotor.h>
 #include <PositionMotor.h>
 #include <Log.h>
@@ -26,7 +26,7 @@ void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
 
 void FamousoPlugin::simExtPublishObjectPosition(SLuaCallBack* p)
 {
-  const char* sensorName=simGetObjectName(p->inputInt[0]);
+  /*const char* sensorName=simGetObjectName(p->inputInt[0]);
   if(sensorName)
   {
     const char* sensorTopic  = p->inputChar;
@@ -35,7 +35,7 @@ void FamousoPlugin::simExtPublishObjectPosition(SLuaCallBack* p)
     plugin.mSensors.emplace_back(new PositionSensor(sensorObject, sensorTopic));
 
     Log::out() << "Registering " << *plugin.mSensors.back() << std::endl;
-  }
+  }*/
 }
 
 void FamousoPlugin::simExtSubscribeMotorVelocity(SLuaCallBack* p)

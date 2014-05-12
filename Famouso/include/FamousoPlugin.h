@@ -33,7 +33,7 @@ class FamousoPlugin : public VREPPlugin, private config::Famouso{
       float distance;
     };
 
-    std::vector<std::unique_ptr<VREPSensor>> mSensors;
+    std::vector<std::unique_ptr<VREPObject>> mSensors;
     std::vector<std::unique_ptr<VREPActuator>> mActuators;
     std::map<famouso::mw::Subject, LaserData> laserSubs;
 
