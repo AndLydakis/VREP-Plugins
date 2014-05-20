@@ -20,6 +20,7 @@ class VREPObject{
     bool operator==(const VREPObject& b);
     simInt id() const;
     std::string name() const;
+    simInt parent() const;
     virtual void update() = 0;
 
   friend std::ostream& operator<<(std::ostream&, const VREPObject&);

@@ -15,10 +15,8 @@ void FamousoPlugin::simExtPublishProximityData(SLuaCallBack* p)
   {
     const char* sensorTopic  = p->inputChar;
     simInt      sensorObject = p->inputInt[0];
-    simBool     isPeriodic   = p->inputBool[0];
-    simFloat    sensorRange  = p->inputFloat[0];
     
-    plugin.mSensors.emplace_back(new ProximitySensor(sensorObject, sensorTopic, isPeriodic, sensorRange));
+    plugin.mSensors.emplace_back(new ProximitySensor(sensorObject, sensorTopic));
 
     Log::out() << "Registering " << *plugin.mSensors.back() << std::endl;
   }
@@ -97,9 +95,9 @@ bool FamousoPlugin::load()
   Log::name(name());
   famouso::init<config::Famouso>();
 
-  int argType[5]={4, sim_lua_arg_int, sim_lua_arg_string, sim_lua_arg_bool, sim_lua_arg_float};
+  int argType[5]={4, sim_lua_arg_int, sim_lua_arg_string};
   if(simRegisterCustomLuaFunction("simExtFamousoPublishProximityData",
-                                  "objectID of proximity sensor@subject of proximity data@periodic@default value",
+                                  "objectID of proximity sensor@subject of proximity data",
                                   argType,
                                   &FamousoPlugin::simExtPublishProximityData
                                   )==-1)

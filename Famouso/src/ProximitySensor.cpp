@@ -3,39 +3,45 @@
 #include <Log.h>
 #include <mw/common/Event.h>
 
-ProximitySensor::ProximitySensor(simInt id, const famouso::mw::Subject& subject, 
-                                 bool periodic, float range)
-  : Base(id, subject), mRange(range), mPeriodic(periodic)
-{}
-
-ProximitySensor::ProximitySensor(const ProximitySensor& copy) 
-  : Base(copy), mRange(copy.mRange.load()), mPeriodic(copy.mPeriodic)
-{}
-
 void ProximitySensor::update()
 {
-  float distanceParameter[4];
-  simInt res=simReadProximitySensor(id(), distanceParameter, NULL, NULL);
-  float temp=range();
-  switch(res){
-    case(1):  temp=distanceParameter[3];
-              break;
-    case(-1): Log::err() << "Error publishing distance" << std::endl;
-              return;
-  }
-  if(!isPeriodic())
-    return;
-  
+  float buffer[4];
+  simInt res;
   Event e;
-  e.attribute(id::attribute::Distance()).value()={{temp}};
-  this->publish(e);
+
+  buffer[0] = simGetSimulationTime();
+  if(buffer[0]<0)
+    Log::err() << "Error publishing distance: no time" << std::endl;
+  else
+    e.attribute(id::attribute::Time()).value()={{buffer[0]}};
+
+  e.attribute(id::attribute::PoseReference()).value() = {{ parent() }};
+  e.attribute(id::attribute::PublisherID()).value()   = {{ (unsigned int)id() }};
+  e.attribute(id::attribute::Validity()).value()      = {{ 1.0f }};
+
+  if(simGetObjectPosition(id(), parent(), buffer)==-1)
+    Log::err() << "Error publishing distance: no position" << std::endl;
+  else
+    e.attribute(id::attribute::Position()).value()    = {{ buffer[0] }, { buffer[1] } , { buffer[2] }};
+
+  if(simGetObjectOrientation(id(), parent(), buffer)==-1)
+    Log::err() << "Error publishing distance: no orientation" << std::endl;
+  else
+    e.attribute(id::attribute::Orientation()).value()    = {{ buffer[0] }, { buffer[1] } , { buffer[2] }};
+
+  res=simReadProximitySensor(id(), buffer, NULL, NULL);
+  switch(res){
+    case(-1): Log::err() << "Error publishing distance: no distance" << std::endl;
+              break;
+    case(1):  e.attribute(id::attribute::Distance()).value()    ={{ buffer[3] }};
+              e.attribute(id::attribute::PolarAngle()).value()  = {{ asinf(buffer[0]/buffer[3]) }, { asinf(buffer[1]/buffer[3]) }};
+              e.attribute(id::attribute::PolarAngle()).value()*=180/M_PI;
+              this->publish(e);
+              break;
+  }
 }
 
 void ProximitySensor::print(std::ostream& out) const{
   out << "Proximity ";
   VREPSensor::print(out);
-  if(isPeriodic())
-    out << " periodically with max range " << range() << "m";
-  else
-    out << " aperiodically";
 }

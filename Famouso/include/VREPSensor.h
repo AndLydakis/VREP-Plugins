@@ -7,7 +7,7 @@
 template<typename SensorEvent>
 class VREPSensor : public VREPObject{
   private:
-    SensorDataPublisher<config::Famouso::EL, SensorEvent> pub;
+    SensorDataPublisher<config::Famouso::EL, SensorEvent> mPub;
   protected:
     using Event = SensorEvent;
 
@@ -18,23 +18,23 @@ class VREPSensor : public VREPObject{
     }
 
     void publish(const Event& e){
-      pub.publish(e);
+      mPub.publish(e);
     }
     
   public:
     using Subject = famouso::mw::Subject;
 
     VREPSensor(simInt id, const Subject& subject)
-      : VREPObject(id), pub(subject){
-      pub.announce();
+      : VREPObject(id), mPub(subject){
+      mPub.announce();
     }
 
     VREPSensor(const VREPSensor& copy)
-      : VREPObject(copy), pub(copy.subject()){
-      pub.announce();
+      : VREPObject(copy), mPub(copy.subject()){
+      mPub.announce();
     }
 
     virtual ~VREPSensor(){}
 
-    const Subject& subject() const { return pub.subject(); }
+    const Subject& subject() const { return mPub.subject(); }
 };

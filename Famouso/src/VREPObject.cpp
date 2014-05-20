@@ -17,6 +17,10 @@ std::string VREPObject::name() const{
   return simGetObjectName(mId);
 }
 
+simInt VREPObject::parent() const{
+  return simGetObjectParent(mId);
+}
+
 bool VREPObject::operator==(const VREPObject& b){
   return mId==b.mId;
 }
