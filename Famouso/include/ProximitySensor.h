@@ -17,13 +17,13 @@ struct ProximityConfig{
   using Vector3f  = Value<float, 3, false>;
   using Vector2fu = Value<float, 2, false>;
   using Int       = Value<int, 1, false>;
-  using ReferenceAttribute   = Attribute<id::attribute::PoseReference, Int, boost::units::si::dimensionless>;
+  using ReferenceAttribute   = Attribute<id::attribute::Reference, Int, boost::units::si::dimensionless>;
   using OrientationAttribute = Attribute<id::attribute::Orientation, Vector3f, boost::units::si::plane_angle>;
   using DistanceAttribute    = Attribute<id::attribute::Distance, Vector1f, boost::units::si::length>;
-  using PolarAngleAttribute  = Attribute<id::attribute::PolarAngle, Vector2fu, boost::units::si::plane_angle, std::ratio<180000,(long)(M_PI*1000)>>;
+  using AngleAttribute  = Attribute<id::attribute::Angle, Vector2fu, boost::units::si::plane_angle, std::ratio<180000,(long)(M_PI*1000)>>;
   using ReferenceEvent   = typename BaseEvent<EventConfig>::append<ReferenceAttribute>::type;
   using OrientationEvent = typename ReferenceEvent::append<OrientationAttribute>::type;
-  using PolarAngleEvent  = typename OrientationEvent::append<PolarAngleAttribute>::type;
+  using PolarAngleEvent  = typename OrientationEvent::append<AngleAttribute>::type;
   using DistanceEvent    = typename PolarAngleEvent::append<DistanceAttribute>::type;
 };
 

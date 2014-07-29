@@ -15,7 +15,7 @@ void ProximitySensor::update()
   else
     e.attribute(id::attribute::Time()).value()={{buffer[0]}};
 
-  e.attribute(id::attribute::PoseReference()).value() = {{ parent() }};
+  e.attribute(id::attribute::Reference()).value() = {{ parent() }};
   e.attribute(id::attribute::PublisherID()).value()   = {{ (unsigned int)id() }};
   e.attribute(id::attribute::Validity()).value()      = {{ 1.0f }};
 
@@ -34,8 +34,8 @@ void ProximitySensor::update()
     case(-1): Log::err() << "Error publishing distance: no distance" << std::endl;
               break;
     case(1):  e.attribute(id::attribute::Distance()).value()    ={{ buffer[3] }};
-              e.attribute(id::attribute::PolarAngle()).value()  = {{ asinf(buffer[0]/buffer[3]) }, { asinf(buffer[1]/buffer[3]) }};
-              e.attribute(id::attribute::PolarAngle()).value()*=180/M_PI;
+              e.attribute(id::attribute::Angle()).value()  = {{ asinf(buffer[0]/buffer[3]) }, { asinf(buffer[1]/buffer[3]) }};
+              e.attribute(id::attribute::Angle()).value()*=180/M_PI;
               this->publish(e);
               break;
   }
