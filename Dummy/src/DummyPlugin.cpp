@@ -2,11 +2,6 @@
 
 #include <Log.h>
 
-void DummyPlugin::load()
-{
-    Log::name(name());
-}
-
 unsigned char DummyPlugin::version() const
 {
   return 1;
@@ -19,6 +14,7 @@ const std::string DummyPlugin::name() const
 
 bool DummyPlugin::load()
 {
+  Log::name(name());
   Log::out() << "loaded" << std::endl;
   return true;
 }
