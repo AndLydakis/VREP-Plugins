@@ -12,3 +12,5 @@ BUILD        := ./build
 LIB          := ./lib
 
 include ../make/plugin.mk
+
+PLUGIN_OBJS := ${PLUGIN_OBJS} ${HOME}/eos/research/AbstractSensorEvents/lib/libASE.a
