@@ -6,12 +6,18 @@
 
 LIBRARY vrepLib;
 
+#ifdef _WIN32
+const char* libName="libv_rep.dll";
+#else
+const char* libName="libv_rep.so";
+#endif
+
 extern "C" unsigned char v_repStart(void* reservedPointer,int reservedInt)
 {
   VREPPlugin& plugin=VREPPlugin::getInstance();
 
 	auto libPath=boost::filesystem::current_path();
-	libPath/="libv_rep.so";
+	libPath/=libName;
 	vrepLib=loadVrepLibrary(libPath.c_str());
 	if (vrepLib==NULL)
 	{
