@@ -11,6 +11,6 @@ SRC          := ./src
 BUILD        := ./build
 LIB          := ./lib
 
-include ../make/plugin.mk
+CUSTOM_OBJS := ${HOME}/eos/research/AbstractSensorEvents/lib/libASE.a
 
-PLUGIN_OBJS := ${PLUGIN_OBJS} ${HOME}/eos/research/AbstractSensorEvents/lib/libASE.a
+include ../make/plugin.mk

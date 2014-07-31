@@ -35,7 +35,7 @@ all: ${TARGET}
 ${PLUGIN_BUILD} ${BUILD} ${LIB}: %:
 	mkdir $@
 
-${TARGET}: ${OBJECTS} ${PLUGIN_OBJS} ${VREP_OBJS} | ${LIB}
+${TARGET}: ${OBJECTS} ${PLUGIN_OBJS} ${VREP_OBJS} ${CUSTOM_OBJS} | ${LIB}
 	${CXX} -o $@ ${LDFLAGS} $^ ${LDPATHS} ${LIBS}
 
 ${OBJECTS}: ${BUILD}/%.o: %.cpp | ${BUILD}

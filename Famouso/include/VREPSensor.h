@@ -25,7 +25,7 @@ class VREPSensor : public VREPObject{
     using Subject = famouso::mw::Subject;
 
     VREPSensor(simInt id, const Subject& subject)
-      : VREPObject(id), mPub(subject){
+      : VREPObject(id), mPub(subject, id){
       mPub.announce();
     }
 
