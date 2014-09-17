@@ -11,6 +11,6 @@ SRC          := ./src
 BUILD        := ./build
 LIB          := ./lib
 
-CUSTOM_OBJS := ../../aseia/lib/libASE.a
+CUSTOM_OBJS := ../../aseia/lib/libASEIA.a
 
 include ../make/plugin.mk
