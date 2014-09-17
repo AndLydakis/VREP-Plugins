@@ -16,8 +16,8 @@ struct ProximityConfig{
   using Vector1f  = Value<float, 1, false>;
   using Vector3f  = Value<float, 3, false>;
   using Vector2fu = Value<float, 2, false>;
-  using Int       = Value<int, 1, false>;
-  using ReferenceAttribute   = Attribute<id::attribute::Reference, Int, boost::units::si::dimensionless>;
+  using UInt      = Value<unsigned int, 1, false>;
+  using ReferenceAttribute   = Attribute<id::attribute::Reference, UInt, boost::units::si::dimensionless>;
   using OrientationAttribute = Attribute<id::attribute::Orientation, Vector3f, boost::units::si::plane_angle>;
   using DistanceAttribute    = Attribute<id::attribute::Distance, Vector1f, boost::units::si::length>;
   using AngleAttribute  = Attribute<id::attribute::Angle, Vector2fu, boost::units::si::plane_angle, std::ratio<180000,(long)(M_PI*1000)>>;
